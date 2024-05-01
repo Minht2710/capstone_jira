@@ -1,0 +1,7 @@
+.ant-message {
+    position: fixed;
+    top: 20px; /* Điều chỉnh khoảng cách từ trên xuống (nếu cần) */
+    left: 50%; /* Để căn giữa màn hình theo chiều ngang */
+    transform: translateX(-50%); /* Dịch chuyển để căn giữa theo chiều ngang */
+    z-index: 9999; /* Đảm bảo thông báo hiển thị trên cùng */
+  }
