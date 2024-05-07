@@ -5,6 +5,9 @@ import { Avatar, Dropdown, Popover, Space } from "antd/es";
 import "./header.scss";
 import { getLocalStorage } from "../../utils/util";
 const Header = () => {
+  const user = getLocalStorage("user");
+  const logOut = () => {};
+
   // project
   const projectDd = [
     {
@@ -66,10 +69,18 @@ const Header = () => {
           key: "1-1",
           label: <NavLink>Profile</NavLink>,
         },
+        {
+          key: "2-2",
+          label: (
+            <button className="font-bold hover:text-red-500 transition-all duration-100">
+              Log Out
+            </button>
+          ),
+        },
       ],
     },
   ];
-  const user = getLocalStorage("user");
+  // console.log(user)
 
   return (
     <header>
@@ -153,7 +164,7 @@ const Header = () => {
               <a onClick={(e) => e.preventDefault()}>
                 <Popover placement="bottomLeft" title={<p>Your Profile</p>}>
                   <Space>
-                    <Avatar>{!user ? "User" : user.avatar}</Avatar>
+                    <Avatar src={!user ? "User" : user.avatar} />
                   </Space>
                 </Popover>
               </a>

@@ -1,0 +1,48 @@
+@import "../../sass/mixin/mixin.scss";
+
+// input project name
+.labelProjectName {
+}
+.inputProjectName {
+  padding: 10px 20px;
+  @include reset-styles;
+}
+.createPJForm {
+  .ql-toolbar {
+    @include reset-styles;
+    text-align: center;
+  }
+  .ql-container {
+    padding-top: 10px;
+    border: none;
+    outline: none;
+    .ql-editor {
+      @include reset-styles;
+      min-height: 250px;
+    }
+  }
+}
+.ant-select-selector {
+  @include reset-styles;
+}
+.ant-select-dropdown {
+  border: none;
+  outline: none;
+  transition: box-shadow ease-in-out 0.2s;
+  box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+}
+
+.btnCreatefnt {
+  margin: 0px 10px;
+  padding: 10px 15px;
+  border-radius: 10px;
+  font-weight: 700;
+  color: white;
+}
+
+.resultSuccess {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, 50%);
+}
