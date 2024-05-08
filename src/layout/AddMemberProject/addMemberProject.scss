@@ -1,0 +1,61 @@
+.layout-AddMember {
+  z-index: 1000;
+  top: -65px;
+  background-color: rgba(0, 0, 0, 0.767);
+  height: 100vh;
+}
+.contentAddMember {
+  border-radius: 20px;
+  width: 1000px;
+  height: auto;
+  overflow: hidden;
+}
+
+// list member
+.listUser {
+  margin: 15px 0;
+  width: 47%;
+}
+.borderList {
+  margin-top: 10px;
+  border: solid 2px black;
+  border-radius: 10px;
+}
+.listAddUser {
+  margin: 15px 2px;
+  padding: 0 5px;
+  height: 500px;
+  overflow-y: auto;
+  &::-webkit-scrollbar {
+    height: 100%;
+    width: 3px;
+    background-color: #3b82f6;
+  }
+  &::-webkit-scrollbar-thumb {
+    background-color: aqua;
+  }
+}
+
+.itemUser {
+  border-radius: 10px;
+  padding: 10px;
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  transition: all ease-in-out 0.2s;
+  &:hover {
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+  }
+}
+
+.searchMember {
+  box-shadow: rgba(0, 0, 0, 0.02) 0px 1px 3px 0px,
+    rgba(27, 31, 35, 0.15) 0px 0px 0px 1px;
+  transition: all 0.2s ease-in-out;
+  border: none;
+  outline: none;
+  padding: 15px 30px;
+  font-size: 20px;
+  &:focus {
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+  }
+}

@@ -1,13 +1,14 @@
 import React, { useState, useEffect } from "react";
 import { quanlyProject } from "../../services/quanLyProject/quanLyProject";
-import { Button, ConfigProvider, Result, Select, message } from "antd";
+import { Button, ConfigProvider, Result, Select, notification } from "antd";
 import EditorCustom from "../../Components/EditorCustom/EditorCustom";
 import "./createProject.scss";
-import { SmileOutlined } from "@ant-design/icons";
+import AddMemberProject from "../../layout/AddMemberProject/AddMemberProject";
 // import Quill from "quill";
 
 const CreateProject = () => {
   //danh sách category
+  const [addMember, setAddMember] = useState(false); //
   const [category, setCategory] = useState([]); // giá trị category
   const [projectName, setProjectName] = useState(""); // gia trị project name
   const [selectedValue, setSelectedValue] = useState(""); //gia trị select option
@@ -51,19 +52,46 @@ const CreateProject = () => {
     quanlyProject
       .createNewProject(values)
       .then((res) => {
-        console.log("Tạo dự án thành công:", res.data.content);
+        // console.log("Tạo dự án thành công:", res.data.content);
         setNewProject(res.data.content);
         setResult(true);
         // Xử lý sau khi tạo dự án thành côn
       })
       .catch((err) => {
+        notification.open({
+          message: (
+            <p className="capitalize font-semibold">
+              <i class="fa-solid fa-circle-exclamation text-red-500 mr-2"></i>
+              Failed to create project
+            </p>
+          ),
+          description:
+            "Your project initialization was unsuccessful because the project name is already in use. Please choose another name.",
+        });
         console.log("Lỗi khi tạo dự án:", err);
       });
   };
 
   // result control
-  const handleResultClose = () => {
+  const resetForm = () => {
+    setProjectName("");
+    setSelectedValue("");
+    setContent("");
     setResult(false);
+  };
+
+  const handleResultClose = () => {
+    resetForm();
+    setResult(false);
+  };
+
+  // addmember control
+  const handleOpenLayout = () => {
+    handleResultClose();
+    setAddMember(true);
+  };
+  const handleCLoseLayout = () => {
+    setAddMember(false);
   };
   return (
     <>
@@ -89,7 +117,14 @@ const CreateProject = () => {
               >
                 Create Project
               </Button>,
-              <Button key="buy">Add member to project </Button>,
+              <Button
+                key="buy"
+                onClick={() => {
+                  handleOpenLayout();
+                }}
+              >
+                Add member to project{" "}
+              </Button>,
             ]}
           />
         ) : (
@@ -163,17 +198,26 @@ const CreateProject = () => {
                   />
                 </ConfigProvider>
               </div>
+              {/* button */}
               <div className="mt-10">
-                <button className="btnCreatefnt bg-red-500 text-white font-bold">
+                <button className="btnCreatefnt bg-slate-500 hover:bg-red-500 text-white font-bold transition-all duration-500">
                   Cancel
                 </button>
                 <button
                   onClick={() => handleCreateProject()}
-                  className="btnCreatefnt bg-green-500 hover:bg-blue-600 transition-all duration-500"
+                  className="btnCreatefnt bg-blue-500 hover:bg-blue-900 transition-all duration-500"
                 >
                   Create
                 </button>
               </div>
+            </div>
+            <div className="">
+              {addMember && (
+                <AddMemberProject
+                  newProject={newProject}
+                  onCloseAddMember={handleCLoseLayout}
+                />
+              )}
             </div>
           </div>
         )}

@@ -10,11 +10,25 @@ export const quanLyTaiKhoanServ = {
   memberOfProject: (projectId, token) => {
     const config = {
       headers: {
-        // "Content-Type": "application/json",
-        accept: "application/json",
         Authorization: `Bearer ${token}`,
       },
     };
     return http.get(`/Users/getUserByProjectId?idProject=${projectId}`, config);
+  },
+  getUser: (token) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    return http.get(`/Users/getUser`, config);
+  },
+  addMemberToProject: (data, token) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    return http.post(`/Project/assignUserProject`, data, config);
   },
 };
