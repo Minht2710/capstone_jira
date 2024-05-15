@@ -2,17 +2,42 @@ import React, { useEffect, useState } from "react";
 import { quanlyProject } from "../../services/quanLyProject/quanLyProject";
 import { NavLink, useNavigate } from "react-router-dom";
 import "./tableData.scss";
-import { Avatar, Card, Pagination, message } from "antd";
+import { Avatar, Card, Modal, Pagination, message } from "antd";
 import useResponsive from "../../hooks/useResponsive";
 import { getLocalStorage } from "../../utils/util";
+import { useDispatch, useSelector } from "react-redux";
+import {
+  getAllProjectThunk,
+  getProjectDetailThunk,
+  handleCloseProjectDetail,
+  handleOpenProjectDetail,
+} from "../../redux/slice/projectSlice";
+import ProjectDetail from "../projectDetail/ProjectDetail";
+import CreateTask from "../Task/CreateTask";
+import {
+  handleCloseCreateTask,
+  handleOpenCreateTask,
+} from "../../redux/slice/taskSlice";
 
 const TableProject = () => {
+  const dispatch = useDispatch();
   const user = getLocalStorage("user");
   // console.log(user);
   const { isMobile } = useResponsive();
   const navigate = useNavigate();
 
-  const [projects, setProjects] = useState([]);
+  const projects = useSelector((state) => state.projectSlice.allProject);
+  const projectDetail = useSelector(
+    (state) => state.projectSlice.projectDetail
+  );
+  const openCreateTask = (state) => state.taskSlice.openCreateTask;
+  const onCLose = () => dispatch(handleCloseCreateTask());
+  const onOpen = () => dispatch(handleOpenCreateTask());
+  // console.log(projectDetail);
+  const showModal = useSelector(
+    (state) => state.projectSlice.openProjectDetail
+  );
+
   const [searchKeyword, setSearchKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(10);
@@ -34,7 +59,9 @@ const TableProject = () => {
       .then((res) => {
         message.success("xóa thành công");
         console.log(res);
-        getAllProject();
+        // getAllProject();
+        // projects();
+        dispatch(getAllProjectThunk());
       })
       .catch((err) => {
         console.log(err.response);
@@ -47,14 +74,6 @@ const TableProject = () => {
   // searchKeyword
   const handleSearchChange = (e) => {
     setSearchKeyword(e.target.value);
-  };
-  const getAllProject = () => {
-    quanlyProject
-      .getAllProject()
-      .then((res) => {
-        setProjects(res.data.content);
-      })
-      .catch((err) => {});
   };
 
   const filteredData = projects.filter(
@@ -76,11 +95,20 @@ const TableProject = () => {
 
   // console.log(getDataForCurrentPage);
   useEffect(() => {
-    // Gọi hàm để lấy dữ liệu khi component mount
-    getAllProject();
-  }, []);
+    // getAllProject();
+    dispatch(getAllProjectThunk());
+  }, [dispatch]);
 
-  // console.log(projects);
+  const handleShowDrawer = (projectId) => {
+    dispatch(handleOpenProjectDetail());
+    dispatch(
+      getProjectDetailThunk({ projectid: projectId, token: user.accessToken })
+    );
+  };
+  const handleCloseDrawer = () => {
+    dispatch(handleCloseProjectDetail());
+  };
+
   return (
     <div>
       <div>
@@ -103,7 +131,7 @@ const TableProject = () => {
           </div>
           <div>
             <button
-            className="createProject"
+              className="createProject"
               onClick={() => {
                 navigate("/create-project");
               }}
@@ -198,13 +226,21 @@ const TableProject = () => {
                 <tr
                   className="rowOfTable"
                   key={project.id}
-                  style={{
-                    backgroundColor:
-                      index % 2 === 0 ? "white" : "rgb(190, 218, 255)",
-                  }}
+                  // style={{
+                  //   backgroundColor:
+                  //     index % 2 === 0 ? "white" : "rgb(190, 218, 255)",
+                  // }}
                 >
                   <th>{project.id}</th>
-                  <th>{project.projectName}</th>
+                  <th>
+                    <button
+                      onClick={() =>
+                        navigate(`/ProjectBoardDetail/${project.id}`)
+                      }
+                    >
+                      {project.projectName}
+                    </button>
+                  </th>
                   <th>{project.categoryName}</th>
                   <th>{project.creator.name}</th>
                   <th>
@@ -238,7 +274,10 @@ const TableProject = () => {
                     >
                       <i class="fa-sharp fa-solid fa-trash"></i>
                     </button>
-                    <button className="btnGroup btnEditProject text-green-500 hover:text-green-700 transition-all duration-500 hover:scale-125">
+                    <button
+                      className="btnGroup btnEditProject text-green-500 hover:text-green-700 transition-all duration-500 hover:scale-125"
+                      onClick={() => handleShowDrawer(project.id)}
+                    >
                       <i class="fa-sharp fa-solid fa-pen-to-square"></i>
                     </button>
                   </th>
@@ -258,6 +297,8 @@ const TableProject = () => {
           onShowSizeChange={(current, size) => setItemsPerPage(size)}
         />
       </div>
+      <ProjectDetail />
+      {/* <CreateTask /> */}
     </div>
   );
 };

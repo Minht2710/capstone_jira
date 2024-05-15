@@ -1,0 +1,19 @@
+@import "../../sass/mixin/mixin.scss";
+
+.ql-toolbar {
+  border-radius: 10px;
+  @include reset-styles;
+  text-align: center;
+}
+.ql-container {
+  padding-top: 10px;
+  border: none;
+  outline: none;
+  .ql-editor {
+    @include reset-styles;
+  }
+}
+
+.ql-toolbar.ql-snow + .ql-container.ql-snow {
+  border: none;
+}

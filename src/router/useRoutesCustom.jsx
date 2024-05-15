@@ -4,7 +4,9 @@ import UserTemplate from "../template/UserTemplate/UserTemplate";
 import HomePage from "../Pages/Home/HomePage";
 import ToggleSignIn from "../Pages/ToggleSignIn/ToggleSignIn";
 import CreateProject from "../Pages/CreateProject/CreateProject";
-// import ToggleSignIn from "../Pages/SignIn/SignIn";
+import ProfileUser from "../Pages/ProfileUser/ProfileUser";
+// import Board from "../Pages/Board/Board";
+import ProjectBoardDetail from "../Pages/Board/ProjectBoardDetail";
 
 const useRoutesCustom = () => {
   const routes = useRoutes([
@@ -19,6 +21,22 @@ const useRoutesCustom = () => {
         {
           path: "/create-project",
           element: <CreateProject />,
+        },
+        {
+          path: "/profile",
+          element: <ProfileUser />,
+        },
+        {
+          path: "/profile/:userId",
+          element: <ProfileUser />,
+        },
+        {
+          path: "/ProjectBoardDetail",
+          element: <ProjectBoardDetail />,
+        },
+        {
+          path: "/ProjectBoardDetail/:projectId",
+          element: <ProjectBoardDetail />,
         },
       ],
     },

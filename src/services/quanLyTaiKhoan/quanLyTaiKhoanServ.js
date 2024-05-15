@@ -23,12 +23,20 @@ export const quanLyTaiKhoanServ = {
     };
     return http.get(`/Users/getUser`, config);
   },
-  addMemberToProject: (data, token) => {
+  addMemberToProject: (values, token) => {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     };
-    return http.post(`/Project/assignUserProject`, data, config);
+    return http.post("/Project/assignUserProject", values, config);
+  },
+  removeMemberFromProject: (values, token) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    return http.post("/Project/removeUserFromProject", values, config);
   },
 };

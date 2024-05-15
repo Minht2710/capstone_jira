@@ -1,3 +1,5 @@
+@import "../../sass/mixin/mixin.scss";
+
 // search
 .searchInput {
   background-color: #2684ff;
@@ -24,7 +26,6 @@
   border-radius: 12px;
   color: white;
   font-weight: 700;
-  
 }
 // table
 .tableData {
@@ -38,7 +39,10 @@
     background-color: #f1e5ab;
   }
 }
-
+.columnName {
+  border-radius: 10px;
+  overflow: hidden;
+}
 .headTable {
   background-color: #2684ff;
   color: white;
@@ -46,11 +50,16 @@
   position: sticky;
   z-index: 11;
   top: 0;
+  overflow: hidden;
   height: 30px;
-  border-radius: 10px;
 }
 .rowOfTable {
-  height: 25px;
+  border-radius: 20px;
+  height: 40px;
+  transition: all 0.5s ease-in-out;
+  &:hover {
+    box-shadow: rgb(38, 57, 77) 0px 20px 30px -10px;
+  }
   th {
     height: 40px;
   }

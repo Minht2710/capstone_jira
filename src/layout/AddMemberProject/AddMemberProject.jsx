@@ -3,23 +3,25 @@ import "./addMemberProject.scss";
 import InputCustom from "../../Components/Input/InputCustom";
 import { getLocalStorage } from "../../utils/util";
 import { quanLyTaiKhoanServ } from "../../services/quanLyTaiKhoan/quanLyTaiKhoanServ";
-import { Avatar } from "antd";
+import { Avatar, message } from "antd";
+import { useDispatch } from "react-redux";
+import { getProjectDetailThunk } from "../../redux/slice/projectSlice";
 
 const AddMemberProject = ({ newProject, onCloseAddMember }) => {
+  const dispatch = useDispatch();
+
   console.log(newProject);
   const user = getLocalStorage("user");
-  // console.log(user.accessToken);
   const [users, setUsers] = useState([]);
   const [searchMember, setSearchMember] = useState("");
   const [addMember, setAddMember] = useState([]);
-  console.log(addMember);
+  const [editor, setEditor] = useState(false);
 
   useEffect(() => {
     quanLyTaiKhoanServ
       .getUser(user.accessToken)
       .then((res) => {
         setUsers(res.data.content);
-        // console.log(res);
       })
       .catch((err) => {});
   }, []);
@@ -34,52 +36,50 @@ const AddMemberProject = ({ newProject, onCloseAddMember }) => {
   );
   const dataAddMember = () => (filterAddMember ? filterAddMember : users);
 
-  const handleAddMember = (userId) => {
-    const memberToAdd = users.find((user) => user.userId === userId);
+  const handleAddMember = (member) => {
+    const memberToAdd = users.find((user) => user.userId === member.userId);
+    console.log(memberToAdd);
     setAddMember((prevMembers) => [...prevMembers, memberToAdd]);
-    const updatedUsers = users.filter((user) => user.userId !== userId);
+    const updatedUsers = users.filter((user) => user.userId !== member.userId);
     setUsers(updatedUsers);
-    const data = {
+    const values = {
       projectId: newProject.id,
-      userId: parseInt(memberToAdd.userId),
+      userId: member.userId,
     };
-    // console.log(memberToAdd.userId, user.accessToken);
     quanLyTaiKhoanServ
-      .addMemberToProject(data, user.accessToken)
+      .addMemberToProject(values, user.accessToken)
       .then((res) => {
-        console.log("thành công", res);
+        console.log();
+        message.success(`${member.name}  has been added to the project`);
+      })
+      .catch((err) => {
+        console.log("thất bại", err);
+      });
+  };
+
+  const handleRemoveMember = (userInfo) => {
+    const memberToRemove = addMember.find(
+      (user) => user.userId === userInfo.userId
+    );
+    setAddMember((prevMembers) =>
+      prevMembers.filter((member) => member.userId !== userInfo.userId)
+    );
+    setUsers((prevUsers) => [...prevUsers, memberToRemove]);
+
+    const values = {
+      projectId: newProject.id,
+      userId: userInfo.userId,
+    };
+    quanLyTaiKhoanServ
+      .removeMemberFromProject(values, user.accessToken)
+      .then((result) => {
+        console.log("Thành công", result);
       })
       .catch((err) => {
         console.log(err);
       });
   };
 
-  const handleRemoveMember = (userId) => {
-    // Tìm thành viên cần loại bỏ từ danh sách addMember
-    const memberToRemove = addMember.find((user) => user.userId === userId);
-
-    // Cập nhật danh sách addMember bằng cách loại bỏ thành viên tương ứng
-    setAddMember((prevMembers) =>
-      prevMembers.filter((member) => member.userId !== userId)
-    );
-
-    // Đưa thành viên đã loại bỏ trở lại vào danh sách users
-    setUsers((prevUsers) => [...prevUsers, memberToRemove]);
-  };
-
-  // handleAddmemberToProject bị lỗi 400
-  // onClick ở dòng 178
-  // -----------------------
-  // const handleAddMemberToProject = () => {
-  //   const data = {
-  //     projectId: newProject.id,
-  //     userId: addMember.map((item) => item.userId),
-  //   };
-  //   quanLyTaiKhoanServ
-  //     .addMemberToProject(data, user.accessToken)
-  //     .then((res) => console.log(res))
-  //     .catch((err) => console.log("lỗi", err));
-  // };
   return (
     <div className=" layout-AddMember absolute w-full left-0">
       <div className="container">
@@ -123,7 +123,8 @@ const AddMemberProject = ({ newProject, onCloseAddMember }) => {
                           <button
                             className="text-blue-500 text-2xl"
                             onClick={() => {
-                              handleAddMember(member.userId);
+                              // console.log(member.userId);
+                              handleAddMember(member);
                             }}
                           >
                             <i class="fa-sharp fa-solid fa-user-plus"></i>
@@ -153,7 +154,7 @@ const AddMemberProject = ({ newProject, onCloseAddMember }) => {
                           <button
                             className="text-red-500 text-2xl"
                             onClick={() => {
-                              handleRemoveMember(member.userId);
+                              handleRemoveMember(member);
                             }}
                           >
                             <i class="fa-sharp fa-solid fa-user-minus"></i>
@@ -170,12 +171,12 @@ const AddMemberProject = ({ newProject, onCloseAddMember }) => {
             <div className="text-end">
               <button
                 className="py-2 px-5 rounded-xl text-white font-bold bg-blue-500 hover:bg-blue-700 transition-all duration-500"
-                onClick
+                onClick={() => onCloseAddMember()}
               >
                 Create New Project
               </button>
               <button
-                className="ml-5 py-2 px-10 rounded-xl text-white font-bold bg-white text-blue-500 border-2 border-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-500"
+                className="ml-5 py-2 px-10 rounded-xl  font-bold bg-white text-blue-500 border-2 border-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-500"
                 //đây là phần bị lỗi 400
                 // onClick={() => handleAddMemberToProject()}
               >

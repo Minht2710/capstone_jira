@@ -4,9 +4,11 @@ import { Button, ConfigProvider, Result, Select, notification } from "antd";
 import EditorCustom from "../../Components/EditorCustom/EditorCustom";
 import "./createProject.scss";
 import AddMemberProject from "../../layout/AddMemberProject/AddMemberProject";
+import { getLocalStorage } from "../../utils/util";
 // import Quill from "quill";
 
 const CreateProject = () => {
+  const user = getLocalStorage("user");
   //danh sách category
   const [addMember, setAddMember] = useState(false); //
   const [category, setCategory] = useState([]); // giá trị category
@@ -50,7 +52,7 @@ const CreateProject = () => {
     };
     // console.log(values);
     quanlyProject
-      .createNewProject(values)
+      .createNewProject(values, user.accessToken)
       .then((res) => {
         // console.log("Tạo dự án thành công:", res.data.content);
         setNewProject(res.data.content);

@@ -13,6 +13,7 @@ export const quanlyProject = {
     return http.get(`/Project/getProjectDetail?id=${id}`, config);
   },
 
+  // delete project
   getDeleteProject: (projectId, token) => {
     const config = {
       headers: {
@@ -21,11 +22,28 @@ export const quanlyProject = {
     };
     return http.delete(`/Project/deleteProject?projectId=${projectId}`, config);
   },
+
+  // category
   getProjectCategory: () => {
     return http.get("/ProjectCategory");
   },
 
-  createNewProject: (projectData) => {
-    return http.post("/Project/createProject", projectData);
+  //create new project
+  createNewProject: (projectData, token) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    return http.post("/Project/createProjectAuthorize", projectData, config);
+  },
+
+  updateStatusProject: (data, token) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    return http.put("/Project/updateStatus", data, config);
   },
 };
