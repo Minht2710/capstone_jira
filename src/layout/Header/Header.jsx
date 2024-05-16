@@ -53,7 +53,7 @@ const Header = () => {
       children: [
         {
           key: "1-1",
-          label: <NavLink>User Managerment</NavLink>,
+          label: <NavLink to="/user-managerment" >User Managerment</NavLink>,
         },
       ],
     },
@@ -64,7 +64,7 @@ const Header = () => {
       children: [
         {
           key: "2-1",
-          label: <NavLink>User Managerment</NavLink>,
+          label: <NavLink>Setting</NavLink>,
         },
       ],
     },

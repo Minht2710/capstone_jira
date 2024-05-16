@@ -17,6 +17,7 @@ const UserTemplate = () => {
       {/* {isLoading ? <Loading /> : null} */}
       {user ? <Outlet /> : <Navigate to={"/Toggle-sign-in"} replace />}
     </>
+    
   );
 };
 

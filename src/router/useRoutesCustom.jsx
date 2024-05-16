@@ -7,6 +7,7 @@ import CreateProject from "../Pages/CreateProject/CreateProject";
 import ProfileUser from "../Pages/ProfileUser/ProfileUser";
 // import Board from "../Pages/Board/Board";
 import ProjectBoardDetail from "../Pages/Board/ProjectBoardDetail";
+import UserManagerment from "../Pages/UserManagerment/UserManagerment";
 
 const useRoutesCustom = () => {
   const routes = useRoutes([
@@ -37,6 +38,10 @@ const useRoutesCustom = () => {
         {
           path: "/ProjectBoardDetail/:projectId",
           element: <ProjectBoardDetail />,
+        },
+        {
+          path: "/user-managerment",
+          element: <UserManagerment/>,
         },
       ],
     },

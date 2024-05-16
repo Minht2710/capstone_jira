@@ -21,8 +21,29 @@ export const quanLyTaiKhoanServ = {
         Authorization: `Bearer ${token}`,
       },
     };
-    return http.get(`/Users/getUser`, config);
+    return http.get(`Users/getUser`, config);
   },
+  getUserById: (userId, accessToken) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    return http.get(`Users/getUser?keyword=${userId}`, config);
+  },
+  updateUser: (user) => {
+    return http.put(`Users/editUser`, user);
+  },
+  deleteUser: (userId,accessToken) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${accessToken}`,
+      },
+    };
+    return http.delete(`Users/deleteUser?id=${userId}`, config);
+  }
+
+  ,
   addMemberToProject: (values, token) => {
     const config = {
       headers: {
