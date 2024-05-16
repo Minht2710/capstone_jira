@@ -84,7 +84,8 @@ const projectSlice = createSlice({
         state.projectDetail = action.payload;
       })
       .addCase(getProjectDetailThunk.rejected, (state, action) => {
-        console.log(action);
+        // console.log(action);
+        message.error(action.error.message);
       })
       .addCase(getCategoryThunk.fulfilled, (state, action) => {
         state.category = action.payload;

@@ -5,6 +5,7 @@ import { useParams } from "react-router-dom";
 import { getProjectDetailThunk } from "../../redux/slice/projectSlice";
 import { getLocalStorage } from "../../utils/util";
 import ColumnDnD from "../../layout/DnDBoard/ColumnDnD";
+import TaskDetail from "../../layout/TaskDetail/TaskDetail";
 
 const ProjectBoardDetail = () => {
   const { projectId } = useParams();
@@ -14,12 +15,13 @@ const ProjectBoardDetail = () => {
   const projectDetail = useSelector(
     (state) => state.projectSlice.projectDetail
   );
+  const taskDetail = useSelector((state) => state.taskSlice.taskDetail);
 
   useEffect(() => {
     dispatch(
       getProjectDetailThunk({ projectid: projectId, token: user.accessToken })
     );
-  }, [dispatch, projectId, user.accessToken]);
+  }, [dispatch]);
   if (!projectDetail || !projectDetail.lstTask) {
     return <div>Loading...</div>; // Hiển thị khi dữ liệu chưa được tải
   }
@@ -34,9 +36,12 @@ const ProjectBoardDetail = () => {
           </span>
         </h1>
       </div>
+      {/* board */}
       <div>
         <ColumnDnD lstTask={projectDetail.lstTask} />
       </div>
+      {/* modal  */}
+      {taskDetail ? <TaskDetail projectId={projectId} /> : null}
     </div>
   );
 };

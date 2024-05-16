@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { DragDropContext, Draggable, Droppable } from "react-beautiful-dnd";
 import ItemTask from "./ItemTask";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import {
   updateStatusThunk,
   getProjectDetailThunk,
@@ -9,16 +9,20 @@ import {
 import { useParams } from "react-router-dom";
 import { getLocalStorage } from "../../utils/util";
 import "./columnDnD.scss";
+import { handleChangeColumn } from "../../redux/slice/taskSlice";
 
 const ColumnDnD = ({ lstTask }) => {
   const user = getLocalStorage("user");
   const { projectId } = useParams();
   const dispatch = useDispatch();
-  const [columns, setColumns] = useState(lstTask);
+  const columns = useSelector((state) => state.taskSlice.column); // Adjust selector if necessary
 
   useEffect(() => {
-    dispatch(getProjectDetailThunk({ projectid: projectId, token: user.accessToken }));
-  }, [dispatch, projectId, user.accessToken]);
+    dispatch(handleChangeColumn(lstTask));
+    dispatch(
+      getProjectDetailThunk({ projectid: projectId, token: user.accessToken })
+    );
+  }, [dispatch, ]);
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
@@ -33,7 +37,7 @@ const ColumnDnD = ({ lstTask }) => {
       );
 
       if (!sourceColumn || !destColumn) {
-        console.error("Không tìm thấy cột nguồn hoặc cột đích");
+        console.error("Source or destination column not found");
         return;
       }
 
@@ -42,36 +46,39 @@ const ColumnDnD = ({ lstTask }) => {
       const [removed] = sourceItems.splice(source.index, 1);
       destItems.splice(destination.index, 0, removed);
 
-      setColumns(
-        columns.map((column) => {
-          if (column.statusId === source.droppableId) {
-            return { ...column, lstTaskDeTail: sourceItems };
-          } else if (column.statusId === destination.droppableId) {
-            return { ...column, lstTaskDeTail: destItems };
-          } else {
-            return column;
-          }
-        })
-      );
+      const updatedColumns = columns.map((column) => {
+        if (column.statusId === source.droppableId) {
+          return { ...column, lstTaskDeTail: sourceItems };
+        } else if (column.statusId === destination.droppableId) {
+          return { ...column, lstTaskDeTail: destItems };
+        } else {
+          return column;
+        }
+      });
+
+      dispatch(handleChangeColumn(updatedColumns));
 
       const values = {
         taskId: removed.taskId,
         statusId: destColumn.statusId,
       };
+
       dispatch(updateStatusThunk({ data: values, token: user.accessToken }))
-        .then((res) => {
-          dispatch(getProjectDetailThunk({
-            projectid: projectId,
-            token: user.accessToken,
-          }));
+        .then(() => {
+          dispatch(
+            getProjectDetailThunk({
+              projectid: projectId,
+              token: user.accessToken,
+            })
+          );
         })
         .catch((err) => {
-          console.log("Lỗi:", err);
+          console.error("Error:", err);
         });
     } else {
       const column = columns.find((col) => col.statusId === source.droppableId);
       if (!column) {
-        console.error("Không tìm thấy cột nguồn");
+        console.error("Source column not found");
         return;
       }
 
@@ -79,13 +86,13 @@ const ColumnDnD = ({ lstTask }) => {
       const [removed] = copiedItems.splice(source.index, 1);
       copiedItems.splice(destination.index, 0, removed);
 
-      setColumns(
-        columns.map((col) =>
-          col.statusId === source.droppableId
-            ? { ...col, lstTaskDeTail: copiedItems }
-            : col
-        )
+      const updatedColumns = columns.map((col) =>
+        col.statusId === source.droppableId
+          ? { ...col, lstTaskDeTail: copiedItems }
+          : col
       );
+
+      dispatch(handleChangeColumn(updatedColumns));
     }
   };
 
@@ -98,17 +105,20 @@ const ColumnDnD = ({ lstTask }) => {
               <div className="titleTask">
                 <h4 className="titleStatus">{status.statusName}</h4>
               </div>
-              <Droppable key={status.statusId} droppableId={String(status.statusId)}>
+              <Droppable
+                key={status.statusId}
+                droppableId={String(status.statusId)}
+              >
                 {(provided) => (
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className="statusBg p-4 m-2 rounded-2xl "
+                    className="statusBg p-4 m-2 rounded-2xl"
                   >
                     <div className="itemLstTask">
                       {status.lstTaskDeTail.map((task, index) => (
                         <Draggable
-                          key={task?.taskId}
+                          key={task.taskId}
                           draggableId={String(task.taskId)}
                           index={index}
                         >
@@ -122,8 +132,6 @@ const ColumnDnD = ({ lstTask }) => {
                                 task={task}
                                 projectId={projectId}
                                 tokenAccess={user.accessToken}
-                                columns={columns}
-                                setColumns={setColumns}
                               />
                             </div>
                           )}
