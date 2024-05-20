@@ -1,0 +1,26 @@
+.siderBar {
+  height: 100%;
+  padding: 0 23px;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+.linkSider {
+  margin-top: 20px;
+  display: flex;
+  align-items: center;
+  p {
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-left: 10px;
+  }
+}
+.userInfo {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-right: 5px;
+}
+
+.logOut {
+}

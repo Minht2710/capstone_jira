@@ -1,5 +1,5 @@
-import { Avatar, Select, Tooltip } from "antd";
-import React, { useEffect, useState } from "react";
+import { Avatar, Tooltip } from "antd";
+import React, { useEffect } from "react";
 import "./itemTask.scss";
 
 import { useDispatch, useSelector } from "react-redux";

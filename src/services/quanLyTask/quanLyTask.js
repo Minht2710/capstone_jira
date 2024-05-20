@@ -44,6 +44,15 @@ export const quanLyTask = {
       config
     );
   },
+
+  deleteComment: (idComment, token) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    return http.delete(`/Comment/deleteComment?idComment=${idComment}`, config);
+  },
   // -------------
   // update
   // update PRIORITY
@@ -75,13 +84,13 @@ export const quanLyTask = {
   //   "taskId": 0,
   //   "description": "string"
   // }
-  updateDescription: (data, token) => {
+  updateDescription: (value, token) => {
     const config = {
       headers: {
         Authorization: `Bearer ${token}`,
       },
     };
-    return http.put("/Project/updateDescription", data, config);
+    return http.put("/Project/updateDescription", value, config);
   },
 
   // update ESTIMATE TIME
@@ -111,5 +120,13 @@ export const quanLyTask = {
       },
     };
     return http.put("/Project/updateTimeTracking", data, config);
+  },
+  updateTask: (data, token) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    return http.post("/Project/updateTask", data, config);
   },
 };

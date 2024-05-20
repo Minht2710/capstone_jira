@@ -1,7 +1,17 @@
-import { Avatar, Input, Modal, Select, Tooltip } from "antd";
+import {
+  Avatar,
+  Input,
+  Modal,
+  Popconfirm,
+  Select,
+  message,
+  Collapse,
+  Slider,
+} from "antd";
 import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import {
+  deleteCommentThunk,
   getCommentThunk,
   getPriorityThunk,
   getStatusThunk,
@@ -10,8 +20,8 @@ import {
   handleChangePriorityValue,
   handleHideModal,
   postCommentThunk,
-  updateCommentThunk,
   updatePriorityThunk,
+  updateTaskThunk,
 } from "../../redux/slice/taskSlice";
 import { useDispatch } from "react-redux";
 import TypeIcon from "../../Components/ICON/TypeIcon";
@@ -19,19 +29,14 @@ import PriorityIcon from "../../Components/ICON/PriorityIcon";
 import { getLocalStorage } from "../../utils/util";
 import { updateStatusThunk } from "../../redux/slice/projectSlice";
 import EditorCustom from "../../Components/EditorCustom/EditorCustom";
-import InputCustom from "../../Components/Input/InputCustom";
 import "./taskDetail.scss";
+import axios from "axios";
+import InputCustom from "../../Components/Input/InputCustom";
 
-const TaskDetail = ({ projectId }) => {
+const TaskDetail = ({ projectDetail }) => {
   const userAvatar = getLocalStorage("user");
   const userToken = getLocalStorage("user").accessToken;
   const dispatch = useDispatch();
-
-  // useState
-  const [readOnly, setReadOnly] = useState(false);
-  const [comment, setComment] = useState("");
-  const [editCommentId, setEditCommentId] = useState(null);
-  const [editContentCmt, setEditContentCmt] = useState("");
 
   // data
   const taskDetail = useSelector((state) => state.taskSlice.taskDetail);
@@ -41,7 +46,9 @@ const TaskDetail = ({ projectId }) => {
   const columns = useSelector((state) => state.taskSlice.column);
   const taskType = useSelector((state) => state.taskSlice.taskTypeList);
   const commentList = useSelector((state) => state.taskSlice.commentList);
-  // console.log(commentList);
+  const priorityValue = useSelector((state) => state.taskSlice.priorityValue);
+
+  // console.log("task detail nha may oi", taskDetail);
 
   useEffect(() => {
     dispatch(getCommentThunk(taskDetail.taskId));
@@ -49,17 +56,26 @@ const TaskDetail = ({ projectId }) => {
     dispatch(getPriorityThunk());
     dispatch(getStatusThunk());
     dispatch(getTaskTypeThunk());
+    setDescriptionContent(taskDetail.description);
   }, [dispatch]);
 
+  // useState
+  const [collapse, setCollapse] = useState(false);
+  // const [memberTask, setMemberTask] = useState(taskDetail.assigness);
+  // const [memberProject, setMemberProject] = useState(projectDetail.members);
+  const [readOnly, setReadOnly] = useState(false);
+  const [descriptionContent, setDescriptionContent] = useState("");
+  const [comment, setComment] = useState("");
+  const [editCommentId, setEditCommentId] = useState(null);
+  const [editContentCmt, setEditContentCmt] = useState(null);
+  const [lstAssigness, setLstAssigness] = useState([]);
+  const [estimateTime, setEstimateTime] = useState(taskDetail.originalEstimate);
+  const [spentTime, setSpentTime] = useState(taskDetail?.timeTrackingSpent);
+  const [typeTask, setTypeTask] = useState(taskDetail.typeId);
+  // console.log("estimate time", estimateTime);
   // handle
   const handlePriorityChange = (priorityId) => {
     dispatch(handleChangePriorityValue(priorityId));
-    const data = {
-      taskId: taskDetail.taskId,
-      priorityId: priorityId,
-    };
-
-    dispatch(updatePriorityThunk({ value: data, token: userToken }));
   };
 
   const handleStatus = (newStatusId) => {
@@ -101,15 +117,39 @@ const TaskDetail = ({ projectId }) => {
 
   // description
   const handleChangeDescripttion = (e) => {
-    console.log(e);
+    setDescriptionContent(e);
   };
+  // console.log("description content", descriptionContent);
+
   const handleRead = () => {
     setReadOnly(false);
   };
   const handleEdit = () => {
     setReadOnly(true);
   };
-  const handleUpdateDescription = () => {};
+  const handleUpdateDescription = (infoDescription) => {
+    console.log("description info", infoDescription.taskId);
+    const valueUpdate = {
+      taskId: infoDescription.taskId,
+      description: descriptionContent,
+    };
+    axios({
+      url: "https://jiranew.cybersoft.edu.vn/api/Project/updateDescription",
+      method: "PUT",
+      data: valueUpdate,
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    })
+      .then((res) => {
+        // console.log(res);
+        message.success("Update complete", 1.5);
+      })
+      .catch((err) => {
+        console.log(err);
+        message.error("Update failed", 1.5);
+      });
+  };
 
   // comment
 
@@ -124,23 +164,26 @@ const TaskDetail = ({ projectId }) => {
     setComment(e.target.value);
   };
   const handleUpdateComment = (commentItem) => {
+    // console.log(commentItem.id);
+
     const value = encodeURIComponent(editContentCmt);
-    dispatch(
-      updateCommentThunk({
-        id: commentItem.id,
-        contentComment: value,
-        token: userToken,
-      })
-    )
+    axios({
+      url: `https://jiranew.cybersoft.edu.vn/api/Comment/updateComment?id=${commentItem.id}&contentComment=${value}`,
+      method: "PUT",
+      headers: {
+        Authorization: `Bearer ${userToken}`,
+      },
+    })
       .then((result) => {
+        handleReadComment();
         dispatch(getCommentThunk(taskDetail.taskId));
       })
       .catch((err) => {
-        console.log("looix update roi", err);
+        setTimeout(message.error("lỗi comment"), 1000);
+        console.log("bug comment", err);
       });
-    console.log(commentItem);
   };
-  console.log(comment);
+  // console.log(comment);
   const handlePostComment = () => {
     const values = {
       taskId: taskDetail.taskId,
@@ -154,20 +197,72 @@ const TaskDetail = ({ projectId }) => {
       .catch((err) => {});
   };
 
-  const values = {
-    listUserAsign: taskDetail.assigness,
+  const confirm = (commentId) => {
+    // console.log(commentId);
+    dispatch(deleteCommentThunk({ idComment: commentId, token: userToken }))
+      .then((result) => {
+        dispatch(getCommentThunk(taskDetail.taskId));
+      })
+      .catch((err) => {});
+  };
+  const cancel = () => {};
+
+  //assigness
+  const handleToggleCollapse = () => {
+    setCollapse(!collapse);
+  };
+  // console.log(projectDetail);
+  const timeTrackingRemaining = parseInt(estimateTime - spentTime);
+  // ---------------------------------------------------------------------------------------------
+  // update task
+  const valuesTask = {
+    listUserAsign: lstAssigness,
     taskId: taskDetail.taskId,
     taskName: taskDetail.taskName,
-    description: taskDetail.description,
+    description: descriptionContent, // Sử dụng descriptionContent nếu bạn muốn cập nhật mô tả mới
     statusId: taskDetail.statusId,
-    originalEstimate: taskDetail.originalEstimate,
-    timeTrackingSpent: taskDetail.timeTrackingSpent,
-    timeTrackingRemaining: taskDetail.timeTrackingRemaining,
-    projectId: projectId,
-    typeId: taskDetail.typeId,
-    priorityId: taskDetail.priorityId,
+    originalEstimate: estimateTime,
+    timeTrackingSpent: spentTime,
+    timeTrackingRemaining: timeTrackingRemaining,
+    projectId: taskDetail.projectId,
+    typeId: typeTask,
+    priorityId: priorityValue,
   };
 
+  const handleChangeAssigness = (member) => {
+    // console.log( member);
+    setLstAssigness(member);
+  };
+  // console.log("assigness nha may oi", lstAssigness);
+
+  useEffect(() => {
+    setLstAssigness(taskDetail.assigness.map((assignee) => assignee.id));
+  }, [taskDetail]);
+
+  const handleChangeEstimate = (e) => {
+    // console.log("estimate", e.target.value);
+    setEstimateTime(e.target.value);
+  };
+  const handleChangeSpentTime = (e) => {
+    console.log("spent time", e.target.value);
+    setSpentTime(e.target.value);
+  };
+  const handleSliderOnChange = (value) => {
+    setSpentTime(value);
+  };
+
+  const handleChangeType = (value) => {
+    console.log(value);
+    setTypeTask(value);
+  };
+  const onCancel = () => {
+    dispatch(updateTaskThunk({ data: valuesTask, token: userToken }))
+      .then((result) => {
+        setTimeout(message.success("thành công rồi"), 1000);
+        dispatch(handleHideModal());
+      })
+      .catch((err) => {});
+  };
   return (
     <div>
       <Modal
@@ -180,6 +275,7 @@ const TaskDetail = ({ projectId }) => {
                 style={{ width: 125, border: "none", outline: "none" }}
                 removeIcon="false"
                 defaultValue={taskDetail.taskTypeDetail.id}
+                onChange={handleChangeType}
                 options={taskType.map((taskTypeItem) => ({
                   value: taskTypeItem.id,
                   label: (
@@ -198,14 +294,13 @@ const TaskDetail = ({ projectId }) => {
         width={1000}
         className="modalContent"
         open={isModalOpen}
-        onCancel={() => dispatch(handleHideModal())}
+        onCancel={onCancel}
         extra={""}
         footer={""}
       >
         <div className="flex">
-          {/* PRIORITY */}
           <div className="w-1/2">
-            {/*  */}
+            {/* PRIORITY */}
             <div>
               <Select
                 style={{
@@ -230,12 +325,22 @@ const TaskDetail = ({ projectId }) => {
               {readOnly ? (
                 <div>
                   <EditorCustom
-                    value={taskDetail.description}
+                    value={descriptionContent}
                     onChange={handleChangeDescripttion}
                   />
-                  <div>
-                    <button onClick={handleRead}>Cancel</button>
-                    <button onClick={handleRead}>Update</button>
+                  <div className="text-end font-semibold my-2">
+                    <button
+                      className="mx-2 text-orange-600"
+                      onClick={handleRead}
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      className="mx-2 text-blue-700"
+                      onClick={() => handleUpdateDescription(taskDetail)}
+                    >
+                      Update
+                    </button>
                   </div>
                 </div>
               ) : (
@@ -309,7 +414,16 @@ const TaskDetail = ({ projectId }) => {
                           Cancel
                         </button>
                       ) : (
-                        <button className="text-red-700 mx-2">Delete</button>
+                        <Popconfirm
+                          title="Delete the comment"
+                          description="Are your to Delete this comment?"
+                          onConfirm={() => confirm(commentItem.id)}
+                          onCancel={cancel}
+                          okText="Yes"
+                          cancelText="No"
+                        >
+                          <button className="text-red-700 mx-2">Delete</button>
+                        </Popconfirm>
                       )}
 
                       {/* button right */}
@@ -337,15 +451,75 @@ const TaskDetail = ({ projectId }) => {
 
           {/* update STATUS*/}
           <div className="w-1/2">
-            <Select
-              onChange={handleStatus}
-              style={{ width: "100%" }}
-              defaultValue={taskDetail.statusId}
-              options={statusList.map((statusItem) => ({
-                value: statusItem.statusId,
-                label: statusItem.statusName,
-              }))}
-            />
+            {/* status */}
+            <div>
+              <Select
+                onChange={handleStatus}
+                style={{ width: "100%" }}
+                defaultValue={taskDetail.statusId}
+                options={statusList.map((statusItem) => ({
+                  value: statusItem.statusId,
+                  label: statusItem.statusName,
+                }))}
+              />
+            </div>
+
+            {/* ASSIGNER */}
+            <div>
+              <div className="mt-5">
+                <button
+                  onClick={handleToggleCollapse}
+                  className="font-bold capitalize"
+                >
+                  assigner
+                </button>
+              </div>
+              <div className="w-full">
+                <Select
+                  mode="multiple"
+                  onChange={handleChangeAssigness}
+                  style={{ width: "100%" }}
+                  defaultValue={taskDetail.assigness.map((member) => member.id)}
+                  options={projectDetail.members?.map((member) => ({
+                    value: member.userId,
+                    label: member.name,
+                  }))}
+                />
+              </div>
+            </div>
+
+            {/* time */}
+            <div>
+              <div className="mt-5">
+                <span className="font-bold">Time </span>
+                <Slider
+                  defaultValue={spentTime}
+                  value={spentTime}
+                  max={estimateTime}
+                  onChange={handleSliderOnChange}
+                />
+              </div>
+              <div>
+                <InputCustom
+                  min={0}
+                  value={estimateTime}
+                  onChange={handleChangeEstimate}
+                  label={"Time Original Estimate:"}
+                  type="number"
+                />
+              </div>
+              <div>
+                <InputCustom
+                  min={0}
+                  max={estimateTime}
+                  value={spentTime}
+                  onChange={handleChangeSpentTime}
+                  label={"Time Tracking Spent :"}
+                  type="number"
+                />
+              </div>
+              <div></div>
+            </div>
           </div>
         </div>
       </Modal>

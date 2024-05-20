@@ -1,0 +1,17 @@
+
+  const values = {
+    listUserAsign: taskDetail.assigness,
+    taskId: taskDetail.taskId,
+    taskName: taskDetail.taskName,
+    description: taskDetail.description,
+    statusId: taskDetail.statusId,
+    originalEstimate: taskDetail.originalEstimate,
+    timeTrackingSpent: taskDetail.timeTrackingSpent,
+    timeTrackingRemaining: taskDetail.timeTrackingRemaining,
+    projectId: projectId,
+    typeId: taskDetail.typeId,
+    priorityId: taskDetail.priorityId,
+  };
+
+
+// giá trị của post update task cần truyền vào

@@ -1,210 +1,111 @@
-import React, { Children, useEffect } from "react";
+import React, { Children, useEffect, useState } from "react";
 import jiralogo from "./../../asset/img/jiralogo.svg";
 import { NavLink, useNavigate } from "react-router-dom";
-import { Avatar, Dropdown, Popover, Space } from "antd/es";
 import "./header.scss";
 import { getLocalStorage } from "../../utils/util";
 import { useDispatch, useSelector } from "react-redux";
-import { handleOpenCreateTask } from "../../redux/slice/taskSlice";
 import CreateTask from "../Task/CreateTask";
 import { getAllProjectThunk } from "../../redux/slice/projectSlice";
+import useResponsive from "../../hooks/useResponsive";
+import { Avatar, Divider, Drawer, Tooltip } from "antd";
+import { handleOpenCreateTask } from "../../redux/slice/taskSlice";
 
 const Header = () => {
+  const user = getLocalStorage("user");
+  const { isMobile } = useResponsive();
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const user = getLocalStorage("user");
+  const [open, setOpen] = useState(false);
+  const showMenuMobile = () => {
+    setOpen(true);
+  };
+  const hidenMenumobile = () => {
+    setOpen(false);
+  };
   const onOpen = () => {
     dispatch(handleOpenCreateTask());
   };
   const logOut = () => {
     localStorage.removeItem("user");
-    navigate("/");
+    navigate("/Toggle-sign-in");
   };
-  // project
-  const projectDd = [
-    {
-      key: "1",
-      label: <NavLink to={"/"}>View All Projects</NavLink>,
-    },
-    {
-      key: "2",
-      label: <NavLink to={"/"}>Create New Project</NavLink>,
-    },
-  ];
-
-  // user
-  const usersDd = [
-    {
-      key: "1",
-      label: <NavLink to={"/"}>View All Projects</NavLink>,
-    },
-    {
-      key: "2",
-      label: <NavLink to={"/"}>Create New Project</NavLink>,
-    },
-  ];
-
-  // setting
-  const settingDd = [
-    {
-      key: "1",
-      label: <p className="uppercase">Atlassian admin</p>,
-      type: "group",
-      children: [
-        {
-          key: "1-1",
-          label: <NavLink to="/user-managerment" >User Managerment</NavLink>,
-        },
-      ],
-    },
-    {
-      key: "2",
-      label: <p className="uppercase">Jira Setting</p>,
-      type: "group",
-      children: [
-        {
-          key: "2-1",
-          label: <NavLink>Setting</NavLink>,
-        },
-      ],
-    },
-  ];
-
-  // Profile
-  const profileDd = [
-    {
-      key: "1",
-      label: <p className="uppercase">trang header</p>,
-      type: "group",
-      children: [
-        {
-          key: "1-1",
-          label: (
-            <button
-              onClick={() => {
-                navigate(`/profile/${user.id}`);
-              }}
-            >
-              Profile
-            </button>
-          ),
-        },
-        {
-          key: "2-2",
-          label: (
-            <button
-              className="font-bold hover:text-red-500 transition-all duration-100"
-              onClick={() => logOut()}
-            >
-              Log Out
-            </button>
-          ),
-        },
-      ],
-    },
-  ];
   // console.log(user)
   useEffect(() => {
     dispatch(getAllProjectThunk());
   }, [dispatch]);
   return (
-    <>
-      <header>
-        <div
-          className="headerNavbar
+    <header className="relative">
+      <div
+        className="headerNavbar
       px-3 flex justify-between items-center"
-        >
-          {/* left */}
-          <div className="headerLeft flex items-center">
-            <div className="logoJira">
-              <img src={jiralogo} alt="" className=" h-6" />
-            </div>
-            <nav className="mx-5">
-              <ul className="flex flex-row">
-                {/* navbar  */}
-                <li>
-                  <Dropdown
-                    menu={{
-                      items: projectDd,
-                    }}
-                  >
-                    <a onClick={(e) => e.preventDefault()}>
-                      <Space>
-                        ProJect
-                        <i class="fa-sharp fa-solid fa-chevron-down inline text-sm"></i>
-                      </Space>
-                    </a>
-                  </Dropdown>
-                </li>
-
-                <li>
-                  <Dropdown
-                    menu={{
-                      items: usersDd,
-                    }}
-                  >
-                    <a onClick={(e) => e.preventDefault()}>
-                      <Space>
-                        Users
-                        <i class="fa-sharp fa-solid fa-chevron-down inline text-sm"></i>
-                        {/* <DownOutlined /> */}
-                      </Space>
-                    </a>
-                  </Dropdown>
-                </li>
-                <li>
-                  <button type="button" onClick={onOpen}>
-                    Create Task
-                  </button>
-                </li>
-              </ul>
-            </nav>
-          </div>
-
-          {/* right */}
-          <div className="headerRight flex items-center">
-            {/* setting  */}
-            <div className="mx-2">
-              <Dropdown
-                menu={{
-                  items: settingDd,
-                }}
-                trigger={["click"]}
-              >
-                <a onClick={(e) => e.preventDefault()}>
-                  <Popover placement="bottom" title={<p>setting</p>}>
-                    <Space>
-                      <i class="fa-duotone fa-gear"></i>
-                    </Space>
-                  </Popover>
-                </a>
-              </Dropdown>
-            </div>
-
-            {/* profile  */}
-            <div className="space-x-2">
-              <Dropdown
-                menu={{
-                  items: profileDd,
-                }}
-                trigger={["click"]}
-              >
-                <a onClick={(e) => e.preventDefault()}>
-                  <Popover placement="bottomLeft" title={<p>Your Profile</p>}>
-                    <Space>
-                      <Avatar src={!user ? "User" : user.avatar} />
-                    </Space>
-                  </Popover>
-                </a>
-              </Dropdown>
-            </div>
+      >
+        {/* left */}
+        <div className="headerLeft">
+          <div className="logoJira">
+            {isMobile ? (
+              <button onClick={showMenuMobile}>
+                <img src={jiralogo} alt="" className="h-8 my-3" />
+              </button>
+            ) : (
+              <NavLink to={"/"}>
+                <img src={jiralogo} alt="" className="h-8 my-3" />
+              </NavLink>
+            )}
           </div>
         </div>
-      </header>
-      <div>
-        <CreateTask />
       </div>
-    </>
+      <Drawer title="Basic Drawer" open={open} onClose={hidenMenumobile}>
+        <div className="siderBar">
+          <div className="flex flex-col">
+            <NavLink to={"/"} className="linkSider text-xl">
+              <i class="fa-solid fa-list-radio inline"></i>
+              <p>Project List </p>
+            </NavLink>
+            <NavLink to={"/create-project"} className="linkSider text-xl">
+              <i class="fa-sharp fa-light fa-layer-plus"></i>
+              <p>Create Project </p>
+            </NavLink>
+            <NavLink to={"/user-managerment"} className="linkSider text-xl">
+              <i class="fa-duotone fa-users"></i>
+              <p>User Manager </p>
+            </NavLink>
+            <NavLink onClick={onOpen} className="linkSider text-xl">
+              <i class="fa-sharp fa-solid fa-grid-2-plus"></i>
+              <p>Create Task </p>
+            </NavLink>
+          </div>
+          <div>
+            <Divider />
+
+            <Tooltip title={user.name}>
+              <div></div>
+              <NavLink to={`/profile/${user.id}`}>
+                <div className="userInfo flex">
+                  <div className="w-3/12">
+                    <Avatar src={user.avatar} size={"large"} />
+                  </div>
+                  <div className="flex flex-col w-9/12">
+                    {/* username */}
+                    <span className="capitalize whitespace-nowrap text-ellipsis font-semibold text-xl w-24">
+                      {user.name}
+                    </span>
+                    <small>{user.id}</small>
+                  </div>
+                </div>
+              </NavLink>
+            </Tooltip>
+            <button
+              onClick={logOut}
+              className="logOut mt-2 w-full rounded-xl hover:bg-red-500 transition-all duration-500 p-2 hover:text-white"
+            >
+              <i class="fa-sharp fa-solid fa-arrow-right-from-bracket mr-2"></i>
+              Log Out
+            </button>
+          </div>
+        </div>
+      </Drawer>
+      <CreateTask />
+    </header>
   );
 };
 

@@ -12,6 +12,8 @@ const InputCustom = ({
   error,
   touched,
   readOnly,
+  min,
+  max,
   type = "text",
 }) => {
   // id, label, placeholder sẽ khác nhau giữa các input
@@ -25,6 +27,8 @@ const InputCustom = ({
         {label}
       </label>
       <input
+        min={min}
+        max={max}
         onBlur={onBlur}
         value={value}
         onChange={onChange}

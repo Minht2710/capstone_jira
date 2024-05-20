@@ -15,14 +15,11 @@ const ColumnDnD = ({ lstTask }) => {
   const user = getLocalStorage("user");
   const { projectId } = useParams();
   const dispatch = useDispatch();
-  const columns = useSelector((state) => state.taskSlice.column); // Adjust selector if necessary
+  const columns = useSelector((state) => state.taskSlice.column);
 
   useEffect(() => {
     dispatch(handleChangeColumn(lstTask));
-    dispatch(
-      getProjectDetailThunk({ projectid: projectId, token: user.accessToken })
-    );
-  }, [dispatch, ]);
+  }, [dispatch, lstTask]);
 
   const onDragEnd = (result) => {
     if (!result.destination) return;
@@ -101,7 +98,7 @@ const ColumnDnD = ({ lstTask }) => {
       <DragDropContext onDragEnd={onDragEnd}>
         <div className="flex flex-wrap mt-5 justify-center">
           {columns?.map((status) => (
-            <div key={status.statusId}>
+            <div key={status.statusId} className="columnDnD">
               <div className="titleTask">
                 <h4 className="titleStatus">{status.statusName}</h4>
               </div>
@@ -113,7 +110,7 @@ const ColumnDnD = ({ lstTask }) => {
                   <div
                     ref={provided.innerRef}
                     {...provided.droppableProps}
-                    className="statusBg p-4 m-2 rounded-2xl"
+                    className="statusBg"
                   >
                     <div className="itemLstTask">
                       {status.lstTaskDeTail.map((task, index) => (

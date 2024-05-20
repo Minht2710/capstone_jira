@@ -1,6 +1,7 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { quanlyProject } from "../../services/quanLyProject/quanLyProject";
 import { message } from "antd";
+import { handleTurnOffLoading, handleTurnOnLoading } from "./loadingSlice";
 
 const initialState = {
   allProject: [],
@@ -13,8 +14,10 @@ const initialState = {
 // get all project
 export const getAllProjectThunk = createAsyncThunk(
   "quanLyProject/getAllProjectThunk",
-  async () => {
+  async (_, { dispatch }) => {
+    dispatch(handleTurnOnLoading());
     const res = await quanlyProject.getAllProject();
+    dispatch(handleTurnOffLoading());
     return res.data.content;
   }
 );
@@ -22,7 +25,7 @@ export const getAllProjectThunk = createAsyncThunk(
 // delete project
 export const getDeleteProjectThunk = createAsyncThunk(
   "quanLyProject/getDeleteProjectThunk",
-  async ({ data, token }, thunkAPI) => {
+  async ({ projectId, data, token }) => {
     const res = await quanlyProject.getDeleteProject(data, token);
     return res.data.content;
   }
@@ -30,15 +33,19 @@ export const getDeleteProjectThunk = createAsyncThunk(
 
 export const getProjectDetailThunk = createAsyncThunk(
   "quanLyProject/getProjectDetailThunk",
-  async ({ projectid, token }, thunkAPI) => {
+  async ({ projectid, token }, { dispatch }) => {
+    // dispatch(handleTurnOnLoading());
     const res = await quanlyProject.getProjectDetail(projectid, token);
+    // dispatch(handleTurnOffLoading());
     return res.data.content;
   }
 );
 export const getCategoryThunk = createAsyncThunk(
   "quanLyProject/getCategoryThunk",
-  async () => {
+  async (_, { dispatch }) => {
+    dispatch(handleTurnOnLoading());
     const res = await quanlyProject.getProjectCategory();
+    dispatch(handleTurnOffLoading());
     return res.data.content;
   }
 );
@@ -50,6 +57,17 @@ export const updateStatusThunk = createAsyncThunk(
     return res.data.content;
   }
 );
+
+export const updateProjectThunk = createAsyncThunk(
+  "quanLyProject/updateProjectThunk",
+  async ({ projectId, data, token }) => {
+    const res = await quanlyProject.updateProject(projectId, data, token);
+    return res.data.content;
+  }
+);
+
+
+
 const projectSlice = createSlice({
   name: "quanLyProject",
   initialState,
@@ -66,9 +84,24 @@ const projectSlice = createSlice({
   // API
   extraReducers: (builder) => {
     builder
+      // update project
+      .addCase(updateProjectThunk.fulfilled, (state, action) => {
+        setTimeout(message.success("update complete"), 1500);
+      })
+      .addCase(updateProjectThunk.rejected, (state, action) => {
+        setTimeout(message.error("update was failed"), 1500);
+        // console.log(action);
+      })
+
       .addCase(getAllProjectThunk.fulfilled, (state, action) => {
         state.allProject = action.payload;
       })
+      .addCase(getAllProjectThunk.rejected, (state, action) => {
+        // state.allProject = action.payload;
+        message.error("lỗi load data");
+        console.log(action);
+      })
+
       .addCase(getDeleteProjectThunk.fulfilled, (state, action) => {
         // state.allProject = action.payload;
         message.success("oke");
@@ -93,9 +126,10 @@ const projectSlice = createSlice({
 
       // update Status board
       .addCase(updateStatusThunk.fulfilled, (state, action) => {
-        console.log(action);
+        // console.log(action);
       })
       .addCase(updateStatusThunk.rejected, (state, action) => {
+        setTimeout(message.error("update status lỗi"), 2000);
         console.log(action);
       });
   },

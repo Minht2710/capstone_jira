@@ -6,6 +6,7 @@ import { saveLocalStorage } from "../../utils/util";
 import InputCustom from "../../Components/Input/InputCustom";
 import { message } from "antd";
 import { useNavigate } from "react-router-dom";
+import "./signIn.scss";
 
 const SignIn = () => {
   const navigate = useNavigate();
@@ -44,8 +45,7 @@ const SignIn = () => {
         email: Yup.string()
           .email("Invalid email address")
           .required("Please enter your Email"),
-        passWord: Yup.string()
-          .required("Please enter your password"),
+        passWord: Yup.string().required("Please enter your password"),
       }),
     });
 
@@ -72,20 +72,7 @@ const SignIn = () => {
         onBlur={handleBlur}
         name="passWord"
       />
-      {/* <div className="remember">
-          <input
-            type="checkbox"
-            id="remeber"
-            className="ml-2 inline items-center h-3 leading-1"
-            onChange={handleRemeberAccount}
-          />
-          <label
-            for="remember"
-            className="ml-1 inline items-center text-xs leading-5"
-          >
-            Rememeber my account
-          </label>
-        </div> */}
+
       <div className="buttonSignInGroup mt-20 text-center w-full">
         <button
           type="submit"

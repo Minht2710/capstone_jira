@@ -13,7 +13,17 @@ const initialState = {
   priorityValue: null,
   taskType: null,
   commentList: [],
+  originalEstimate: null,
+  timeSpent: null,
 };
+
+export const getTaskDetailThunk = createAsyncThunk(
+  "quanLyTask/getTaskDetailThunk",
+  async ({ data, token }) => {
+    const res = await quanLyTask.getTaskDetail(data, token);
+    return res.data.content;
+  }
+);
 
 export const getStatusThunk = createAsyncThunk(
   "quanLyTask/getStatusThunk",
@@ -109,10 +119,41 @@ export const updateCommentThunk = createAsyncThunk(
     return res.data.content;
   }
 );
+
+export const deleteCommentThunk = createAsyncThunk(
+  "quanLyTask/deleteCommentThunk",
+  async ({ idComment, token }) => {
+    const res = await quanLyTask.deleteComment(idComment, token);
+    return res.data.content;
+  }
+);
+
+// update task
+// update task
+export const updateTaskThunk = createAsyncThunk(
+  "quanLyTask/updateTaskThunk",
+  async ({ data, token }, { dispatch }) => {
+    const res = await quanLyTask.updateTask(data, token);
+    return res.data.content;
+  }
+);
+
 const taskSlice = createSlice({
   name: "task",
   initialState,
   reducers: {
+    //original estimate
+    handleChangeOriginal: (state, action) => {
+      state.originalEstimate = action.payload;
+    },
+    handleUpdateOriginal: (state, action) => {
+      state.originalEstimate = action.payload;
+    },
+    handleTimeSpent: (state, action) => {
+      state.timeSpent = action.payload;
+    },
+
+    // create task
     handleOpenCreateTask: (state, action) => {
       state.openCreateTask = true;
     },
@@ -139,24 +180,43 @@ const taskSlice = createSlice({
     handleChangePriorityValue: (state, action) => {
       state.priorityValue = action.payload;
     },
+
+    handleSpentTime: (state, action) => {
+      state.timeSpent = action.payload;
+    },
   },
 
   extraReducers: (builder) => {
     builder
+      // update task
+      .addCase(updateTaskThunk.fulfilled, (state, action) => {
+        setTimeout(message.success("update complete"), 2000);
+      })
+      .addCase(updateTaskThunk.rejected, (state, action) => {
+        setTimeout(message.error("update complete"), 2000);
+        console.log(action);
+      })
+      // delete comment
+      .addCase(deleteCommentThunk.fulfilled, (state, action) => {
+        setTimeout(message.success("Comment deleted successfully"), 1000);
+      })
+      .addCase(deleteCommentThunk.rejected, (state, action) => {
+        setTimeout(message.error("Comment deleted error"), 1000);
+      })
       // post comment
       .addCase(updateCommentThunk.fulfilled, (state, action) => {
-        message.success("Update comment complete");
+        setTimeout(message.success("Update comment complete"), 1000);
       })
       .addCase(updateCommentThunk.rejected, (state, action) => {
-        message.error("Update comment", action.error.message);
+        setTimeout(message.error("Update comment", action.error.message), 1000);
         console.log("error comment update", action);
       })
       .addCase(postCommentThunk.fulfilled, (state, action) => {
         console.log(action);
-        message.success("Success");
+        setTimeout(message.success("Success"), 1000);
       })
       .addCase(postCommentThunk.rejected, (state, action) => {
-        message.error(action.error.message);
+        setTimeout(message.error(action.error.message), 1500);
       })
       .addCase(getCommentThunk.fulfilled, (state, action) => {
         state.commentList = action.payload;
@@ -164,6 +224,7 @@ const taskSlice = createSlice({
       .addCase(getCommentThunk.rejected, (state, action) => {
         message.error(action.error.message);
       })
+      // status
       .addCase(getStatusThunk.fulfilled, (state, action) => {
         state.statusList = action.payload;
       })
@@ -171,9 +232,13 @@ const taskSlice = createSlice({
         console.log(action.payload);
         message.error("error");
       })
+
+      // priority
       .addCase(getPriorityThunk.fulfilled, (state, action) => {
         state.priorityList = action.payload;
       })
+
+      // task type
       .addCase(getTaskTypeThunk.fulfilled, (state, action) => {
         state.taskTypeList = action.payload;
       })
@@ -189,13 +254,15 @@ const taskSlice = createSlice({
       .addCase(getCreateTaskThunk.rejected, (state, action) => {
         console.log(action);
       })
-      // .addCase(getTaskDetailThunk.fulfilled, (state, action) => {
-      //   state.taskDetail = action.payload;
-      // })
-      // .addCase(getTaskDetailThunk.rejected, (state, action) => {
-      //   console.log(action.payload);
-      //   message.error("Failed to fetch task detail.");
-      // })
+      // get task
+      .addCase(getTaskDetailThunk.fulfilled, (state, action) => {
+        console.log(action);
+        state.taskDetail = action.payload;
+      })
+      .addCase(getTaskDetailThunk.rejected, (state, action) => {
+        console.log(action);
+        message.error("Failed to fetch task detail.");
+      })
 
       // -------
       // updatePriority
@@ -209,9 +276,11 @@ const taskSlice = createSlice({
 
       // update Description
       .addCase(updateDescriptionThunk.fulfilled, (state, action) => {
+        setTimeout(message.success("Description update Success"), 1500);
         console.log(action);
       })
       .addCase(updateDescriptionThunk.rejected, (state, action) => {
+        setTimeout(message.error("Description update error"), 1500);
         console.log(action);
       })
 
@@ -229,6 +298,9 @@ const taskSlice = createSlice({
 });
 
 export const {
+  handleChangeOriginal,
+  handleTimeSpent,
+  handleUpdateOriginal,
   handleChangePriorityValue,
   handleShowModal,
   handleChangeColumn,

@@ -27,7 +27,9 @@ const ToggleSignIn = () => {
         </div>
 
         {/* Render either sign-in or sign-up form based on formSignIn state */}
-        <div className="inputGroup">{formSignIn ? <SignIn /> : <SignUp backSignIn={handleBackSignIn}/>}</div>
+        <div className="inputGroup">
+          {formSignIn ? <SignIn /> : <SignUp backSignIn={handleBackSignIn} />}
+        </div>
 
         {/* Button to toggle between sign-in and sign-up */}
         <div>
@@ -57,6 +59,5 @@ const ToggleSignIn = () => {
     </div>
   );
 };
-
 
 export default ToggleSignIn;

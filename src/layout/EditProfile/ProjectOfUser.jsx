@@ -4,11 +4,12 @@ import projectSlice, {
   getAllProjectThunk,
   getDeleteProjectThunk,
   getProjectDetailThunk,
+  handleOpenProjectDetail,
 } from "../../redux/slice/projectSlice";
 import { getLocalStorage } from "../../utils/util";
 import { Card, Popover, message } from "antd";
 import "./projectOfUser.scss";
-import { quanlyProject } from "../../services/quanLyProject/quanLyProject";
+import ProjectDetail from "../projectDetail/ProjectDetail";
 
 const ProjectOfUser = () => {
   const user = getLocalStorage("user");
@@ -16,17 +17,16 @@ const ProjectOfUser = () => {
   const dispatch = useDispatch();
 
   const getAllProject = useSelector((state) => state.projectSlice.allProject);
-  const getProjectDetail = useSelector(
-    (state) => state.projectSlice.projectDetail
-  );
-  console.log(getAllProject);
-  // const getDeleteProject = useSelector((state)=> state.projectSlice.allProject)
 
-  // code delete bị sai
   const handleDeleteProject = (projectId) => {
     dispatch(
       getDeleteProjectThunk({ data: projectId, token: user.accessToken })
-    );
+    )
+      .then((result) => {
+        setTimeout(message.success("Delete complete"));
+        dispatch(getAllProjectThunk());
+      })
+      .catch((err) => {});
   };
 
   useEffect(() => {
@@ -36,32 +36,27 @@ const ProjectOfUser = () => {
   // Lọc dữ liệu nếu getAllProject có giá trị
   const projectOfUser = getAllProject
     ? getAllProject.filter((project) => {
-        // Kiểm tra xem project.creator có tồn tại và có thuộc tính id
-        // Chỉ lấy các dự án có id của người tạo bằng id của người dùng
         return project.creator && project.creator.id
           ? project.creator.id === user.id
           : [];
       })
     : [];
 
-  // console.log(projectOfUser.id);
-  // project detail
   const handleProjectDetail = (projectId) => {
-    console.log(projectId);
+    dispatch(handleOpenProjectDetail());
     dispatch(
       getProjectDetailThunk({ projectid: projectId, token: user.accessToken })
     );
-    // dispatch(getProjectDetailThunk({ projectId, token: user.accessToken }));
   };
-  console.log(getProjectDetail);
   return (
     <div>
-      <div>
+      {/* title */}
+      <div className="mt-10">
         <h3 className="font-bold text-lg">Your Project</h3>
       </div>
-      <div className="flex flex-wrap justify-between">
+      {/* item */}
+      <div className="projectListUser flex flex-wrap justify-evenly overflow-x-auto">
         {projectOfUser.map((project) => {
-          // console.log(project.id);
           const content = (
             <div className="popoverMore">
               <button
@@ -80,6 +75,9 @@ const ProjectOfUser = () => {
           );
           return (
             <Card
+              title={project.projectName}
+              className="cardProjectUser m-2"
+              style={{ width: 300 }}
               key={project.id}
               extra={
                 <Popover
@@ -93,9 +91,6 @@ const ProjectOfUser = () => {
                   </button>
                 </Popover>
               }
-              title={project.projectName}
-              className="cardProjectUser m-2"
-              style={{ width: 300 }}
             >
               <div>
                 <span>Project Id: </span>
@@ -109,6 +104,7 @@ const ProjectOfUser = () => {
           );
         })}
       </div>
+      <ProjectDetail />
     </div>
   );
 };

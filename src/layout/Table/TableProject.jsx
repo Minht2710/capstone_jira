@@ -13,7 +13,6 @@ import {
   handleOpenProjectDetail,
 } from "../../redux/slice/projectSlice";
 import ProjectDetail from "../projectDetail/ProjectDetail";
-import CreateTask from "../Task/CreateTask";
 import {
   handleCloseCreateTask,
   handleOpenCreateTask,
@@ -22,21 +21,10 @@ import {
 const TableProject = () => {
   const dispatch = useDispatch();
   const user = getLocalStorage("user");
-  // console.log(user);
   const { isMobile } = useResponsive();
   const navigate = useNavigate();
 
   const projects = useSelector((state) => state.projectSlice.allProject);
-  const projectDetail = useSelector(
-    (state) => state.projectSlice.projectDetail
-  );
-  const openCreateTask = (state) => state.taskSlice.openCreateTask;
-  const onCLose = () => dispatch(handleCloseCreateTask());
-  const onOpen = () => dispatch(handleOpenCreateTask());
-  // console.log(projectDetail);
-  const showModal = useSelector(
-    (state) => state.projectSlice.openProjectDetail
-  );
 
   const [searchKeyword, setSearchKeyword] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -59,8 +47,6 @@ const TableProject = () => {
       .then((res) => {
         message.success("xóa thành công");
         console.log(res);
-        // getAllProject();
-        // projects();
         dispatch(getAllProjectThunk());
       })
       .catch((err) => {
@@ -104,9 +90,6 @@ const TableProject = () => {
     dispatch(
       getProjectDetailThunk({ projectid: projectId, token: user.accessToken })
     );
-  };
-  const handleCloseDrawer = () => {
-    dispatch(handleCloseProjectDetail());
   };
 
   return (

@@ -1,0 +1,24 @@
+@import "../../sass/mixin/responsive.scss";
+.profileUser {
+  @include breakpoint(sm, xs) {
+    flex-direction: column;
+    justify-content: center;
+    width: 100%;
+  }
+  .avatarUser {
+    @include breakpoint(sm, xs) {
+      width: 300px;
+    }
+  }
+  .infoUser {
+    @include breakpoint(sm, xs) {
+      width: 100%;
+      margin: 0 20px;
+    }
+    form {
+      @include breakpoint(sm, xs) {
+        padding: 20px 0;
+      }
+    }
+  }
+}

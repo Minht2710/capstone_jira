@@ -6,11 +6,15 @@ import { getProjectDetailThunk } from "../../redux/slice/projectSlice";
 import { getLocalStorage } from "../../utils/util";
 import ColumnDnD from "../../layout/DnDBoard/ColumnDnD";
 import TaskDetail from "../../layout/TaskDetail/TaskDetail";
+import {
+  handleTurnOffLoading,
+  handleTurnOnLoading,
+} from "../../redux/slice/loadingSlice";
 
 const ProjectBoardDetail = () => {
+  const dispatch = useDispatch();
   const { projectId } = useParams();
   const user = getLocalStorage("user");
-  const dispatch = useDispatch();
 
   const projectDetail = useSelector(
     (state) => state.projectSlice.projectDetail
@@ -18,13 +22,15 @@ const ProjectBoardDetail = () => {
   const taskDetail = useSelector((state) => state.taskSlice.taskDetail);
 
   useEffect(() => {
+    dispatch(handleTurnOnLoading());
     dispatch(
       getProjectDetailThunk({ projectid: projectId, token: user.accessToken })
     );
-  }, [dispatch]);
-  if (!projectDetail || !projectDetail.lstTask) {
-    return <div>Loading...</div>; // Hiển thị khi dữ liệu chưa được tải
-  }
+    dispatch(handleTurnOffLoading());
+  }, [dispatch, projectId]);
+  // if (!projectDetail || !projectDetail.lstTask) {
+  //   return <div>Loading...</div>;
+  // }
 
   return (
     <div className="container mx-auto">
@@ -32,16 +38,16 @@ const ProjectBoardDetail = () => {
         <h1 className="font-semibold">
           Project:
           <span className="font-bold uppercase text-2xl ml-2 text-blue-500">
-            {projectDetail.projectName}
+            {projectDetail?.projectName}
           </span>
         </h1>
       </div>
       {/* board */}
       <div>
-        <ColumnDnD lstTask={projectDetail.lstTask} />
+        <ColumnDnD lstTask={projectDetail?.lstTask} />
       </div>
       {/* modal  */}
-      {taskDetail ? <TaskDetail projectId={projectId} /> : null}
+      {taskDetail ? <TaskDetail projectDetail={projectDetail} /> : null}
     </div>
   );
 };

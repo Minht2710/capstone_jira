@@ -34,16 +34,15 @@ export const quanLyTaiKhoanServ = {
   updateUser: (user) => {
     return http.put(`Users/editUser`, user);
   },
-  deleteUser: (userId,accessToken) => {
+  deleteUser: (userId, accessToken) => {
     const config = {
       headers: {
         Authorization: `Bearer ${accessToken}`,
       },
     };
     return http.delete(`Users/deleteUser?id=${userId}`, config);
-  }
+  },
 
-  ,
   addMemberToProject: (values, token) => {
     const config = {
       headers: {
@@ -59,5 +58,14 @@ export const quanLyTaiKhoanServ = {
       },
     };
     return http.post("/Project/removeUserFromProject", values, config);
+  },
+
+  addMemberTask: (data, token) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    return http.post("/Project/assignUserTask", data, config);
   },
 };

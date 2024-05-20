@@ -1,8 +1,27 @@
+@import "../../sass/mixin/responsive.scss";
+
+.columnDnD {
+  height: auto;
+  width: 360px;
+  margin-right: 20px;
+  padding: 10px 20px 30px 20px;
+  border-radius: 20px;
+  background-color: rgb(158, 158, 158);
+  transition: height 2s ease-in-out;
+  @include breakpoint(lg, md, sm, xs){
+    margin-bottom: 20px;
+  }
+}
+.titleTask {
+  .titleStatus {
+    margin: 10px 10px 0 0;
+    color: white;
+    font-weight: 500;
+  }
+}
 .statusBg {
-  background: #f4f5f7;
-  width: 320px;
+  // background: #f4f5f7;
   transition: height 0.5s ease-in-out;
-  height: 500px;
 }
 .titleStatus {
   color: black;

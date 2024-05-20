@@ -46,4 +46,16 @@ export const quanlyProject = {
     };
     return http.put("/Project/updateStatus", data, config);
   },
+  updateProject: (projectId, data, token) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    return http.put(
+      `/Project/updateProject?projectId=${projectId}`,
+      data,
+      config
+    );
+  },
 };
