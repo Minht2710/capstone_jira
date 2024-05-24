@@ -24,7 +24,7 @@ const SignIn = () => {
           console.log(res);
           saveLocalStorage("user", res.data.content);
           const info = () => {
-            message.info(
+            message.success(
               <p className="thongBao">
                 `Welcome back, {res.data.content.name}!`
               </p>
@@ -35,10 +35,9 @@ const SignIn = () => {
             navigate("/");
           }, 1000);
           // thÔng báo đăng nhập thành công
-          // Xử lý logic sau khi đăng nhập thành công (ví dụ: điều hướng người dùng)
         } catch (error) {
           console.log(error);
-          // Xử lý lỗi khi đăng nhập thất bại (ví dụ: hiển thị thông báo lỗi)
+          message.error("Incorrect username or password. Please try again.")
         }
       },
       validationSchema: Yup.object({

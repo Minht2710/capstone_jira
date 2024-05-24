@@ -129,4 +129,12 @@ export const quanLyTask = {
     };
     return http.post("/Project/updateTask", data, config);
   },
+  removeTask: (taskId, token) => {
+    const config = {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    };
+    return http.delete(`/Project/removeTask?taskId=${taskId}`, config);
+  },
 };

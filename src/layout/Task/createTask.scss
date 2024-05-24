@@ -1,0 +1,30 @@
+@import "../../sass/mixin/responsive.scss";
+
+.taskContent {
+  display: flex;
+  @include breakpoint(sm, xs, md) {
+    flex-direction: column;
+  }
+}
+.ql-editor {
+  min-height: 200px;
+}
+.taskItemContent {
+  width: 50%;
+  @include breakpoint(sm, xs, md) {
+    width: 100%;
+  }
+  &:first-child {
+    padding: 0 20px 0 0;
+    @include breakpoint(sm, xs, md) {
+      padding: 0;
+    }
+  }
+  &:last-child {
+    padding: 0 0 0 20px;
+    @include breakpoint(sm, xs, md) {
+        padding: 0;
+        margin-top: 10px;
+      }
+  }
+}

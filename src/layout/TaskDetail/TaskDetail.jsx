@@ -20,6 +20,7 @@ import {
   handleChangePriorityValue,
   handleHideModal,
   postCommentThunk,
+  removeTaskThunk,
   updatePriorityThunk,
   updateTaskThunk,
 } from "../../redux/slice/taskSlice";
@@ -27,7 +28,10 @@ import { useDispatch } from "react-redux";
 import TypeIcon from "../../Components/ICON/TypeIcon";
 import PriorityIcon from "../../Components/ICON/PriorityIcon";
 import { getLocalStorage } from "../../utils/util";
-import { updateStatusThunk } from "../../redux/slice/projectSlice";
+import {
+  getProjectDetailThunk,
+  updateStatusThunk,
+} from "../../redux/slice/projectSlice";
 import EditorCustom from "../../Components/EditorCustom/EditorCustom";
 import "./taskDetail.scss";
 import axios from "axios";
@@ -48,7 +52,7 @@ const TaskDetail = ({ projectDetail }) => {
   const commentList = useSelector((state) => state.taskSlice.commentList);
   const priorityValue = useSelector((state) => state.taskSlice.priorityValue);
 
-  // console.log("task detail nha may oi", taskDetail);
+  // console.log("taskDetail: ", taskDetail);
 
   useEffect(() => {
     dispatch(getCommentThunk(taskDetail.taskId));
@@ -56,13 +60,12 @@ const TaskDetail = ({ projectDetail }) => {
     dispatch(getPriorityThunk());
     dispatch(getStatusThunk());
     dispatch(getTaskTypeThunk());
+    dispatch(handleChangePriorityValue(taskDetail.priorityTask.priorityId));
     setDescriptionContent(taskDetail.description);
   }, [dispatch]);
 
   // useState
   const [collapse, setCollapse] = useState(false);
-  // const [memberTask, setMemberTask] = useState(taskDetail.assigness);
-  // const [memberProject, setMemberProject] = useState(projectDetail.members);
   const [readOnly, setReadOnly] = useState(false);
   const [descriptionContent, setDescriptionContent] = useState("");
   const [comment, setComment] = useState("");
@@ -71,11 +74,12 @@ const TaskDetail = ({ projectDetail }) => {
   const [lstAssigness, setLstAssigness] = useState([]);
   const [estimateTime, setEstimateTime] = useState(taskDetail.originalEstimate);
   const [spentTime, setSpentTime] = useState(taskDetail?.timeTrackingSpent);
-  const [typeTask, setTypeTask] = useState(taskDetail.typeId);
-  // console.log("estimate time", estimateTime);
+  const [typeTask, setTypeTask] = useState(taskDetail.taskTypeDetail.id);
+
   // handle
   const handlePriorityChange = (priorityId) => {
     dispatch(handleChangePriorityValue(priorityId));
+    // console.log(priorityId);
   };
 
   const handleStatus = (newStatusId) => {
@@ -142,7 +146,6 @@ const TaskDetail = ({ projectDetail }) => {
       },
     })
       .then((res) => {
-        // console.log(res);
         message.success("Update complete", 1.5);
       })
       .catch((err) => {
@@ -219,21 +222,19 @@ const TaskDetail = ({ projectDetail }) => {
     listUserAsign: lstAssigness,
     taskId: taskDetail.taskId,
     taskName: taskDetail.taskName,
-    description: descriptionContent, // Sử dụng descriptionContent nếu bạn muốn cập nhật mô tả mới
+    description: descriptionContent,
     statusId: taskDetail.statusId,
     originalEstimate: estimateTime,
     timeTrackingSpent: spentTime,
     timeTrackingRemaining: timeTrackingRemaining,
     projectId: taskDetail.projectId,
     typeId: typeTask,
-    priorityId: priorityValue,
+    priorityId: String(priorityValue),
   };
-
+  // console.log(valuesTask);
   const handleChangeAssigness = (member) => {
-    // console.log( member);
     setLstAssigness(member);
   };
-  // console.log("assigness nha may oi", lstAssigness);
 
   useEffect(() => {
     setLstAssigness(taskDetail.assigness.map((assignee) => assignee.id));
@@ -244,7 +245,7 @@ const TaskDetail = ({ projectDetail }) => {
     setEstimateTime(e.target.value);
   };
   const handleChangeSpentTime = (e) => {
-    console.log("spent time", e.target.value);
+    // console.log("spent time", e.target.value);
     setSpentTime(e.target.value);
   };
   const handleSliderOnChange = (value) => {
@@ -252,17 +253,41 @@ const TaskDetail = ({ projectDetail }) => {
   };
 
   const handleChangeType = (value) => {
-    console.log(value);
+    // console.log(value);
     setTypeTask(value);
   };
   const onCancel = () => {
     dispatch(updateTaskThunk({ data: valuesTask, token: userToken }))
       .then((result) => {
-        setTimeout(message.success("thành công rồi"), 1000);
         dispatch(handleHideModal());
+        dispatch(
+          getProjectDetailThunk({
+            projectid: projectDetail.id,
+            token: userToken,
+          })
+        );
       })
-      .catch((err) => {});
+      .catch((err) => {
+        console.log(err);
+      });
   };
+  const handleDeleteTask = () => {
+    dispatch(removeTaskThunk({ taskId: taskDetail.taskId, token: userToken }))
+      .then((result) => {
+        dispatch(handleHideModal());
+        dispatch(
+          getProjectDetailThunk({
+            projectid: projectDetail.id,
+            token: userToken,
+          })
+        );
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+  console.log(taskDetail);
+
   return (
     <div>
       <Modal
@@ -295,11 +320,11 @@ const TaskDetail = ({ projectDetail }) => {
         className="modalContent"
         open={isModalOpen}
         onCancel={onCancel}
-        extra={""}
+        // extra={""}
         footer={""}
       >
-        <div className="flex">
-          <div className="w-1/2">
+        <div className="taskContent">
+          <div className="taskItemContent">
             {/* PRIORITY */}
             <div>
               <Select
@@ -450,7 +475,7 @@ const TaskDetail = ({ projectDetail }) => {
           </div>
 
           {/* update STATUS*/}
-          <div className="w-1/2">
+          <div className="taskItemContent">
             {/* status */}
             <div>
               <Select
@@ -518,7 +543,12 @@ const TaskDetail = ({ projectDetail }) => {
                   type="number"
                 />
               </div>
-              <div></div>
+              <div className="btnRemoveTask">
+                {/* button delete task  */}
+                <button className="btnDeleteTask" onClick={handleDeleteTask}>
+                  <i class="fa-solid fa-trash-can"></i> Delete
+                </button>
+              </div>
             </div>
           </div>
         </div>

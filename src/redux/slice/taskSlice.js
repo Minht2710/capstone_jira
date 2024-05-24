@@ -138,6 +138,15 @@ export const updateTaskThunk = createAsyncThunk(
   }
 );
 
+// remove task
+export const removeTaskThunk = createAsyncThunk(
+  "quanLyTask/removeTaskThunk",
+  async ({ taskId, token }) => {
+    const res = await quanLyTask.removeTask(taskId, token);
+    return res.data.content;
+  }
+);
+
 const taskSlice = createSlice({
   name: "task",
   initialState,
@@ -172,7 +181,7 @@ const taskSlice = createSlice({
       state.showModal = true;
     },
     handleHideModal: (state, action) => {
-      console.log(action);
+      // console.log(action);
       state.taskDetail = null;
       state.showModal = false;
     },
@@ -188,14 +197,25 @@ const taskSlice = createSlice({
 
   extraReducers: (builder) => {
     builder
-      // update task
-      .addCase(updateTaskThunk.fulfilled, (state, action) => {
-        setTimeout(message.success("update complete"), 2000);
-      })
-      .addCase(updateTaskThunk.rejected, (state, action) => {
-        setTimeout(message.error("update complete"), 2000);
+
+      // remove task
+      .addCase(removeTaskThunk.fulfilled, (state, action) => {
+        setTimeout(message.success("Delete Task Complete"), 1000);
         console.log(action);
       })
+      .addCase(removeTaskThunk.rejected, (state, action) => {
+        setTimeout(message.error("Failed "), 1000);
+        console.log(action);
+      })
+      // update task
+      .addCase(updateTaskThunk.fulfilled, (state, action) => {
+        // setTimeout(message.success("update complete"), 2000);
+      })
+      .addCase(updateTaskThunk.rejected, (state, action) => {
+        setTimeout(message.error("update error"), 2000);
+        console.log(action);
+      })
+
       // delete comment
       .addCase(deleteCommentThunk.fulfilled, (state, action) => {
         setTimeout(message.success("Comment deleted successfully"), 1000);
@@ -248,7 +268,7 @@ const taskSlice = createSlice({
 
       // create Task
       .addCase(getCreateTaskThunk.fulfilled, (state, action) => {
-        message.success("create Task complete");
+        setTimeout(message.success("create Task complete"), 1000);
         console.log(action);
       })
       .addCase(getCreateTaskThunk.rejected, (state, action) => {

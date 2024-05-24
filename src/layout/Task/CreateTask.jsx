@@ -1,4 +1,4 @@
-import { Button, Drawer, Select, Slider, Space } from "antd";
+import { Button, Drawer, Select, Slider, Space, message } from "antd";
 import React, { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
@@ -15,6 +15,8 @@ import { useFormik } from "formik";
 import InputCustom from "../../Components/Input/InputCustom";
 import EditorCustom from "../../Components/EditorCustom/EditorCustom";
 import * as Yup from "yup";
+import "./createTask.scss";
+import { getProjectDetailThunk } from "../../redux/slice/projectSlice";
 
 const CreateTask = () => {
   const user = getLocalStorage("user");
@@ -88,7 +90,17 @@ const CreateTask = () => {
         ),
     }),
     onSubmit: (values) => {
-      dispatch(getCreateTaskThunk({ values: values, token: user.accessToken }));
+      dispatch(getCreateTaskThunk({ values: values, token: user.accessToken }))
+        .then((result) => {
+          dispatch(handleCloseCreateTask());
+          dispatch(
+            getProjectDetailThunk({
+              projectid: values.projectId,
+              token: user.accessToken,
+            })
+          );
+        })
+        .catch((err) => {});
     },
   });
 
@@ -366,8 +378,13 @@ const CreateTask = () => {
             />
           </div>
 
-          <div>
-            <button type="submit">test</button>
+          <div className="w-full text-center mt-5">
+            <button
+              className="w-full py-2 bg-blue-500 text-white rounded-sm hover:bg-blue-950 transition-all duration-500 font-semibold"
+              type="submit"
+            >
+              Create task
+            </button>
           </div>
         </form>
       </Drawer>

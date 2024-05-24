@@ -12,8 +12,10 @@ import InputCustom from "../../Components/Input/InputCustom";
 import EditorCustom from "../../Components/EditorCustom/EditorCustom";
 import { useFormik } from "formik";
 import { getLocalStorage } from "../../utils/util";
+import { useNavigate } from "react-router-dom";
 
 const ProjectDetail = () => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = getLocalStorage("user");
 
@@ -159,8 +161,16 @@ const ProjectDetail = () => {
           />
           <div className="mt-2 text-right">
             <button
+              className="mr-2 border-solid border-2 border-blue-500 py-2 px-5 rounded-md transition-all duration-500 text-blue-500 hover:bg-blue-700 hover:text-white font-semibold"
+              onClick={() =>
+                navigate(`/ProjectBoardDetail/${projectDetail.id}`)
+              }
+            >
+              Task Manager
+            </button>
+            <button
               type="submit"
-              className="bg-blue-500 py-2 px-5 rounded-md font-bold text-white hover:bg-blue-800 transition-all duration-500"
+              className="border-solid border-2 border-blue-500 bg-blue-500 py-2 px-5 rounded-md font-bold text-white hover:bg-blue-800 transition-all duration-500"
             >
               Edit
             </button>
