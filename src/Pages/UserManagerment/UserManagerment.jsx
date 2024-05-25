@@ -189,23 +189,24 @@ const UserManagerment = () => {
     // searchKeyword
     const [searchKeyword, setSearchKeyword] = useState("");
 
-    // const handleSearchChange = (e) => {
-    //     quanLyTaiKhoanServ.getUserById(e.target.value, accessToken)
-    //         .then((res) => {
-    //             console.log(res.data.content);
-    //             setData(res.data.content)
-
-
-    //         })
-    //         .catch((err) => {
-    //             console.log(err);
-    //         });
-
-    //     setSearchKeyword(e.target.value);
-    // };
     const handleSearchChange = (e) => {
+        quanLyTaiKhoanServ.getUserById(e.target.value, accessToken)
+            .then((res) => {
+                console.log(res.data.content);
+                setData(res.data.content)
+
+
+            })
+            .catch((err) => {
+                console.log(err);
+            });
+
         setSearchKeyword(e.target.value);
     };
+    // const handleSearchChange = (e) => {
+    //     setSearchKeyword(e.target.value);
+
+    // };
 
     const [visible, setVisible] = useState(false);
 
