@@ -100,7 +100,7 @@ const UserManagerment = () => {
     ];
 
     let onChange = (pagination, filters, sorter, extra) => {
-        console.log('params', pagination, filters, sorter, extra);
+        // console.log('params', pagination, filters, sorter, extra);
     };
 
     // edit user
@@ -108,12 +108,12 @@ const UserManagerment = () => {
     let handelEditUser = async (userId) => {
         quanLyTaiKhoanServ.getUserById(userId, accessToken)
             .then((res) => {
-                console.log(res.data.content[0]);
+                // console.log(res.data.content[0]);
                 setUserDetail(res.data.content[0])
 
             })
             .catch((err) => {
-                console.log(err);
+                // console.log(err);
             });
 
 
@@ -151,11 +151,13 @@ const UserManagerment = () => {
         onSubmit: async (values) => {
             quanLyTaiKhoanServ.updateUser(values)
                 .then((res) => {
-                    console.log(res.data.content);
+                    // console.log(res.data.content);
+                    message.success(res.data.content)
                     setIsReload(values)
                 })
                 .catch((err) => {
-                    console.log(err);
+                    // console.log(err);
+                    // message.error(err.response.data.content)
                 });
 
 
@@ -173,12 +175,12 @@ const UserManagerment = () => {
     let handelDeleteUser = (userId) => {
         quanLyTaiKhoanServ.deleteUser(userId, accessToken)
             .then((res) => {
-                console.log(res.data.content);
+                // console.log(res.data.content);
                 message.success(res.data.content)
                 setIsReload(userId)
             })
             .catch((err) => {
-                console.log(err.response.data.content);
+                // console.log(err.response.data);
                 message.error(err.response.data.content)
             });
 
