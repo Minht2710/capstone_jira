@@ -1,0 +1,60 @@
+.ant-table{
+    overflow: auto;
+    height: 70vh;
+    width: 100%;
+    scrollbar-color:#9695959c #ffffff;
+    scrollbar-width: thin;
+    // color: #808080;
+}
+
+
+
+// mobile responsive
+.mobileUser {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    -ms-flex-wrap: wrap;
+    flex-wrap: wrap;
+    .searchInput {
+        background-color: #2684ff;
+        padding: 10px 15px;
+        color: white;
+        border-radius: 12px;
+        .formSearch {
+          border: none;
+          outline: none;
+          background-color: transparent;
+          width: 0;
+          transition: all 0.5s;
+          &:focus {
+            margin-left: 10px;
+            width: 50%;
+          }
+        }
+      }
+  }
+  .cardUser {
+    width: 300px;
+    height: 220px;
+    margin: 15px 2%;
+    box-shadow: rgba(0, 0, 0, 0.16) 0px 1px 4px, rgb(33, 125, 248) 0px 0px 0px 3px;
+  }
+  .nameCard {
+    margin-right: 5px;
+    text-transform: capitalize;
+    font-weight: 700;
+  }
+  .contentCard {
+    font-size: 18px;
+    text-align: right;
+  }
+  .custom-avatar-group-mobie {
+    transform: translateY(35%);
+  }
+  
+  .btnGroup {
+    font-size: 18px;
+    margin: 0 5px;
+  }
