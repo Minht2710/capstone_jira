@@ -6,8 +6,10 @@ import { quanLyTaiKhoanServ } from "../../services/quanLyTaiKhoan/quanLyTaiKhoan
 import { Avatar, message } from "antd";
 import { useDispatch } from "react-redux";
 import { getProjectDetailThunk } from "../../redux/slice/projectSlice";
+import { useNavigate } from "react-router-dom";
 
 const AddMemberProject = ({ newProject, onCloseAddMember }) => {
+  const navigate = useNavigate();
   const dispatch = useDispatch();
 
   console.log(newProject);
@@ -177,10 +179,9 @@ const AddMemberProject = ({ newProject, onCloseAddMember }) => {
               </button>
               <button
                 className="ml-5 py-2 px-10 rounded-xl  font-bold bg-white text-blue-500 border-2 border-blue-500 hover:bg-blue-500 hover:text-white transition-all duration-500"
-                //đây là phần bị lỗi 400
-                // onClick={() => handleAddMemberToProject()}
+                onClick={() => navigate("/")}
               >
-                Add Member
+                Finish
               </button>
             </div>
           </div>
