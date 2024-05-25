@@ -192,7 +192,7 @@ const UserManagerment = () => {
     const handleSearchChange = (e) => {
         quanLyTaiKhoanServ.getUserById(e.target.value, accessToken)
             .then((res) => {
-                console.log(res.data.content);
+                // console.log(res.data.content);
                 setData(res.data.content)
 
 
