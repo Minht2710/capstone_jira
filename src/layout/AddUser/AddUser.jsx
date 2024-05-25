@@ -5,6 +5,7 @@ import { NavLink, useNavigate } from 'react-router-dom';
 // import { NotifyContext } from '../../template/Template';
 import InputCustom from '../../Components/Input/InputCustom';
 import { quanLyTaiKhoanServ } from '../../services/quanLyTaiKhoan/quanLyTaiKhoanServ';
+import { message } from 'antd';
 
 
 const AddUser = ({setIsReload}) => {
@@ -33,6 +34,7 @@ const AddUser = ({setIsReload}) => {
             quanLyTaiKhoanServ.dangKi(values)
                 .then((res) => {
                     console.log(res.data.message);
+                    message.success(res.data.message)
                 })
                 .catch((err) => {
                     console.log(err);
