@@ -209,7 +209,8 @@ const taskSlice = createSlice({
       })
       // update task
       .addCase(updateTaskThunk.fulfilled, (state, action) => {
-        // setTimeout(message.success("update complete"), 2000);
+        console.log(action)
+        setTimeout(message.success("update complete"), 2000);
       })
       .addCase(updateTaskThunk.rejected, (state, action) => {
         setTimeout(message.error("update error"), 2000);
@@ -287,10 +288,10 @@ const taskSlice = createSlice({
       // -------
       // updatePriority
       .addCase(updatePriorityThunk.fulfilled, (state, action) => {
-        console.log(action);
+        // console.log(action);
       })
       .addCase(updatePriorityThunk.rejected, (state, action) => {
-        console.log(action);
+        // console.log(action);
         message.error(action.error.message);
       })
 

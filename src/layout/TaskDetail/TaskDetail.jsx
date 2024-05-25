@@ -75,6 +75,7 @@ const TaskDetail = ({ projectDetail }) => {
   const [estimateTime, setEstimateTime] = useState(taskDetail.originalEstimate);
   const [spentTime, setSpentTime] = useState(taskDetail?.timeTrackingSpent);
   const [typeTask, setTypeTask] = useState(taskDetail.taskTypeDetail.id);
+  const [taskStatusId, setTaskStatusId] = useState(taskDetail.statusId);
 
   // handle
   const handlePriorityChange = (priorityId) => {
@@ -83,6 +84,7 @@ const TaskDetail = ({ projectDetail }) => {
   };
 
   const handleStatus = (newStatusId) => {
+    setTaskStatusId(newStatusId);
     const updatedColumns = columns.map((column) => {
       if (column.statusId === taskDetail.statusId) {
         // Loại bỏ task khỏi danh sách cũ của trạng thái cũ
@@ -223,7 +225,7 @@ const TaskDetail = ({ projectDetail }) => {
     taskId: taskDetail.taskId,
     taskName: taskDetail.taskName,
     description: descriptionContent,
-    statusId: taskDetail.statusId,
+    statusId: taskStatusId,
     originalEstimate: estimateTime,
     timeTrackingSpent: spentTime,
     timeTrackingRemaining: timeTrackingRemaining,
